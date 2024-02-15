@@ -81,6 +81,23 @@ async function run() {
       res.send(result);
     });
 
+    // Doing Pagination
+    app.get("/menuCount", async (req, res) => {
+      const count = await menuCollection.estimatedDocumentCount();
+      res.send({ count });
+    });
+    app.get("/menuPagination", async (req, res) => {
+      const page = parseInt(req.query.page);
+      const size = parseInt(req.query.size);
+      const skip = page * size;
+      const result = await menuCollection
+        .find({})
+        .skip(skip)
+        .limit(size)
+        .toArray();
+      res.send(result);
+    });
+
     app.post("/menu", verifyToken, verifyAdmin, async (req, res) => {
       const data = req.body;
       const result = await menuCollection.insertOne(data);
